@@ -30,12 +30,56 @@ function Servers({
       if (matchingServer) {
         setActiveServerId(matchingServer.data_id);
       } else if (servers && servers.length > 0) {
-        setActiveServerId(servers[0].data_id);
+        // If no matching server, prefer Sub HD-2 over others
+        const subHD2Server = servers.find(server => 
+          server.serverName === "HD-2" && server.type === "sub");
+        
+        if (subHD2Server) {
+          setActiveServerId(subHD2Server.data_id);
+        } else {
+          // Fall back to Sub HD-1
+          const subHD1Server = servers.find(server => 
+            server.serverName === "HD-1" && server.type === "sub");
+          
+          if (subHD1Server) {
+            setActiveServerId(subHD1Server.data_id);
+          } else {
+            // If no Sub HD servers, fall back to any HD-2
+            const hd2Server = servers.find(server => server.serverName === "HD-2");
+            if (hd2Server) {
+              setActiveServerId(hd2Server.data_id);
+            } else {
+              setActiveServerId(servers[0].data_id);
+            }
+          }
+        }
       }
     } else if (servers && servers.length > 0) {
-      setActiveServerId(servers[0].data_id);
+      // If no saved preference, prefer Sub HD-2 over others
+      const subHD2Server = servers.find(server => 
+        server.serverName === "HD-2" && server.type === "sub");
+      
+      if (subHD2Server) {
+        setActiveServerId(subHD2Server.data_id);
+      } else {
+        // Fall back to Sub HD-1
+        const subHD1Server = servers.find(server => 
+          server.serverName === "HD-1" && server.type === "sub");
+        
+        if (subHD1Server) {
+          setActiveServerId(subHD1Server.data_id);
+        } else {
+          // If no Sub HD servers, fall back to any HD-2
+          const hd2Server = servers.find(server => server.serverName === "HD-2");
+          if (hd2Server) {
+            setActiveServerId(hd2Server.data_id);
+          } else {
+            setActiveServerId(servers[0].data_id);
+          }
+        }
+      }
     }
-  }, [servers]);
+  }, [servers, setActiveServerId]);
 
   const handleServerSelect = (server) => {
     setActiveServerId(server.data_id);

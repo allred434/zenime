@@ -115,18 +115,25 @@ export const useWatch = (animeId, initialEpisodeId) => {
       setServerLoading(true);
       try {
         const data = await getServers(animeId, episodeId);
+        
+        // Filter servers to only include HD-1 and HD-2
         const filteredServers = data?.filter(
           (server) =>
             server.serverName === "HD-1" || server.serverName === "HD-2"
         );
+        
         const savedServerName = localStorage.getItem("server_name");
         const savedServerType = localStorage.getItem("server_type");
         let initialServer;
+        
+        // First check if there's a saved server preference
         initialServer = data.find(
           (server) =>
             server.serverName === savedServerName &&
             server.type === savedServerType
         );
+        
+        // If no exact match, try matching just the server name
         if (!initialServer) {
           initialServer = data.find(
             (server) =>
@@ -134,20 +141,31 @@ export const useWatch = (animeId, initialEpisodeId) => {
               server.type !== savedServerType
           );
         }
+        
+        // If still no match, try to find a Sub HD-2 server specifically
+        if (!initialServer) {
+          initialServer = data.find(
+            (server) =>
+              server.type === "sub" && server.serverName === "HD-2"
+          );
+        }
+        
+        // If no Sub HD-2, try Sub HD-1
+        if (!initialServer) {
+          initialServer = data.find(
+            (server) =>
+              server.type === "sub" && server.serverName === "HD-1"
+          );
+        }
+        
+        // If still no match, try any HD-2 or HD-1
         if (!initialServer) {
           initialServer =
-            data.find(
-              (server) =>
-                server.type === savedServerType && server.serverName === "HD-1"
-            ) ||
-            data.find(
-              (server) =>
-                server.type === savedServerType && server.serverName === "HD-2"
-            );
+            data.find(server => server.serverName === "HD-2") ||
+            data.find(server => server.serverName === "HD-1") ||
+            filteredServers[0];
         }
-        if (!initialServer) {
-          initialServer = filteredServers[0];
-        }
+        
         setServers(filteredServers);
         setActiveServerId(initialServer?.data_id);
       } catch (error) {

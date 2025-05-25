@@ -22,6 +22,8 @@ import SidecardLoader from "@/src/components/Loader/Sidecard.loader";
 import Voiceactor from "@/src/components/voiceactor/Voiceactor";
 import Watchcontrols from "@/src/components/watchcontrols/Watchcontrols";
 import useWatchControl from "@/src/hooks/useWatchControl";
+import VerifyPopup from "@/src/components/VerifyPopup/VerifyPopup";
+import { trackWatchPage } from "@/src/utils/analytics";
 
 export default function Watch() {
   const location = useLocation();
@@ -97,13 +99,13 @@ export default function Watch() {
 
   // Update document title
   useEffect(() => {
-    if (animeInfo) {
-      document.title = `Watch ${animeInfo.title} English Sub/Dub online Free on ${website_name}`;
+    if (animeInfo && activeEpisodeNum) {
+      document.title = `${animeInfo.title} Episode ${activeEpisodeNum} - Animeobt`;
     }
     return () => {
-      document.title = `${website_name} | Free anime streaming platform`;
+      document.title = `Animeobt | Free anime streaming platform`;
     };
-  }, [animeId]);
+  }, [animeId, animeInfo, activeEpisodeNum]);
 
   // Redirect if no episodes
   useEffect(() => {
@@ -174,6 +176,21 @@ export default function Watch() {
       },
     ]);
   }, [animeId, animeInfo]);
+
+  // Track page view once when component mounts or when anime/episode changes
+  useEffect(() => {
+    // Only track when we have both animeInfo and episodeId
+    if (animeInfo && activeEpisodeNum) {
+      // Send a single tracking event
+      trackWatchPage({
+        animeId,
+        episodeId,
+        title: animeInfo?.title,
+        episodeNum: activeEpisodeNum
+      });
+    }
+  }, [animeId, episodeId, animeInfo, activeEpisodeNum]);
+
   return (
     <div className="w-full h-fit flex flex-col justify-center items-center relative">
       <div className="w-full relative max-[1400px]:px-[30px] max-[1200px]:px-[80px] max-[1024px]:px-0">
@@ -516,6 +533,9 @@ export default function Watch() {
           )}
         </div>
       </div>
+      
+      {/* Human Verification Popup */}
+      <VerifyPopup />
     </div>
   );
 }
