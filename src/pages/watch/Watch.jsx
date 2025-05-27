@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams, Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/src/context/LanguageContext";
 import { useHomeInfo } from "@/src/context/HomeInfoContext";
@@ -11,6 +11,8 @@ import website_name from "@/src/config/website";
 import Sidecard from "@/src/components/sidecard/Sidecard";
 import CategoryCard from "@/src/components/categorycard/CategoryCard";
 import {
+  faArrowRight,
+  faArrowLeft,
   faClosedCaptioning,
   faMicrophone,
 } from "@fortawesome/free-solid-svg-icons";
@@ -198,12 +200,13 @@ export default function Watch() {
         <img
           src={
             !animeInfoLoading
-              ? getImageUrl(animeInfo?.poster, { forceDirect: true })
+              ? getImageUrl(animeInfo?.poster, { section: 'watch', forceDirect: true })
               : "https://i.postimg.cc/rFZnx5tQ/2-Kn-Kzog-md.webp"
           }
           alt={`${animeInfo?.title} Poster`}
           className="absolute inset-0 w-full h-full object-cover filter grayscale z-[-900]"
           onError={(e) => handleImageError(e, { originalUrl: animeInfo?.poster })}
+          data-section="watch"
         />
         <div className="absolute inset-0 bg-[#3a3948] bg-opacity-80 backdrop-blur-md z-[-800]"></div>
         <div className="relative z-10 px-4 pb-[50px] grid grid-cols-[minmax(0,75%),minmax(0,25%)] w-full h-full mt-[128px] max-[1400px]:flex max-[1400px]:flex-col max-[1200px]:mt-[64px] max-[1024px]:px-0 max-md:mt-[50px]">
@@ -335,10 +338,11 @@ export default function Watch() {
                         </p>
                         <div className="absolute inset-0 z-10 bg-[url('https://i.postimg.cc/pVGY6RXd/thumb.png')] bg-repeat"></div>
                         <img
-                          src={getImageUrl(season.season_poster, { forceDirect: true })}
+                          src={getImageUrl(season.season_poster, { section: 'watch', forceDirect: true })}
                           alt=""
                           className="w-full h-full object-cover blur-[3px] opacity-50"
                           onError={(e) => handleImageError(e, { originalUrl: season.season_poster })}
+                          data-section="watch"
                         />
                       </Link>
                     ))}
@@ -383,10 +387,11 @@ export default function Watch() {
           <div className="flex flex-col gap-y-4 items-start ml-8 max-[1400px]:ml-0 max-[1400px]:mt-10 max-[1400px]:flex-row max-[1400px]:gap-x-6 max-[1024px]:px-[30px] max-[1024px]:mt-8 max-[500px]:mt-4 max-[500px]:px-4">
             {animeInfo && animeInfo?.poster ? (
               <img
-                src={getImageUrl(animeInfo?.poster, { forceDirect: true })}
+                src={getImageUrl(animeInfo?.poster, { section: 'watch', forceDirect: true })}
                 alt=""
                 className="w-[100px] h-[150px] object-cover max-[500px]:w-[70px] max-[500px]:h-[90px]"
                 onError={(e) => handleImageError(e, { originalUrl: animeInfo?.poster })}
+                data-section="watch"
               />
             ) : (
               <Skeleton className="w-[100px] h-[150px] rounded-none" />
@@ -492,7 +497,7 @@ export default function Watch() {
       </div>
       <div className="w-full flex gap-x-4 items-center bg-[#191826] p-5 max-[575px]:px-3 max-[320px]:hidden">
         <img
-          src="https://i.postimg.cc/d34WWyNQ/share-icon.gif"
+          src="/images/share-icon.gif"
           alt="Share Anime"
           className="w-[60px] h-auto rounded-full max-[1024px]:w-[40px] max-[575px]:hidden"
         />

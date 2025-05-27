@@ -34,7 +34,8 @@ export const getImageUrl = (imageUrl, options = {}) => {
   // Handle problematic sections differently when deployed
   const isProblematicSection = section && [
     'spotlight', 'trending', 'top-airing', 
-    'most-popular', 'most-favorite', 'latest-completed'
+    'most-popular', 'most-favorite', 'latest-completed',
+    'continue-watching', 'topten', 'watch', 'animeinfo'
   ].includes(section.toLowerCase());
 
   // For problematic sections, always use direct URL without proxy
@@ -93,7 +94,8 @@ export const handleImageError = (e, options = {}) => {
   const section = e.target.dataset?.section;
   const isProblematicSection = section && [
     'spotlight', 'trending', 'top-airing', 
-    'most-popular', 'most-favorite', 'latest-completed'
+    'most-popular', 'most-favorite', 'latest-completed',
+    'continue-watching', 'topten', 'watch', 'animeinfo'
   ].includes(section.toLowerCase());
   
   // If we have the original URL and the current src is using wsrv.nl
