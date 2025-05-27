@@ -37,25 +37,36 @@ export const getImageUrl = (imageUrl, options = {}) => {
     'most-popular', 'most-favorite', 'latest-completed'
   ].includes(section.toLowerCase());
 
-  // In development, we can use wsrv.nl proxy as it works fine
-  if (isDevelopment && useProxy && !forceDirect) {
-    return `https://wsrv.nl/?url=${imageUrl}`;
-  }
-  
-  // For problematic sections or when forceDirect is true, always use direct URL
+  // For problematic sections, always use direct URL without proxy
   if (isProblematicSection || forceDirect) {
+    // If the URL already has wsrv.nl, extract the original URL
+    if (imageUrl.includes('wsrv.nl')) {
+      try {
+        const urlParam = new URLSearchParams(imageUrl.split('?')[1]).get('url');
+        return urlParam || imageUrl;
+      } catch (error) {
+        // If parsing fails, return the original URL
+        return imageUrl;
+      }
+    }
+    
+    // Otherwise return the direct URL
     return imageUrl;
   }
   
-  // For other sections in production, try a different approach
+  // In development, we can use wsrv.nl proxy as it works fine for non-problematic sections
+  if (isDevelopment && useProxy) {
+    return `https://wsrv.nl/?url=${imageUrl}`;
+  }
+  
+  // For other sections in production, handle according to whether it's already proxied
   if (!isDevelopment) {
-    // If the image URL already contains "wsrv.nl", extract the original URL
+    // If the image URL already contains "wsrv.nl", use it as is
     if (imageUrl.includes('wsrv.nl')) {
-      const urlParam = new URLSearchParams(imageUrl.split('?')[1]).get('url');
-      return urlParam || imageUrl;
+      return imageUrl;
     }
     
-    // Use direct URL in production to avoid proxy issues
+    // Otherwise use direct URL
     return imageUrl;
   }
   
@@ -78,17 +89,42 @@ export const handleImageError = (e, options = {}) => {
     onFallbackUsed = null
   } = options;
   
+  // Get section from data attribute if available
+  const section = e.target.dataset?.section;
+  const isProblematicSection = section && [
+    'spotlight', 'trending', 'top-airing', 
+    'most-popular', 'most-favorite', 'latest-completed'
+  ].includes(section.toLowerCase());
+  
   // If we have the original URL and the current src is using wsrv.nl
-  if (originalUrl && e.target.src.includes('wsrv.nl')) {
+  if (originalUrl && (e.target.src.includes('wsrv.nl') || isProblematicSection)) {
     // Try direct URL first
     e.target.src = originalUrl;
     
     // Add event listener for second failure
     e.target.onerror = () => {
-      e.target.src = fallbackImage;
-      e.target.onerror = null; // Prevent infinite loop
-      if (onFallbackUsed && typeof onFallbackUsed === 'function') {
-        onFallbackUsed();
+      // For production environment, try an alternative proxy approach as fallback
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                            window.location.hostname === '127.0.0.1';
+      if (!isDevelopment && originalUrl) {
+        // Try a direct CORS proxy as second fallback for production
+        e.target.src = originalUrl;
+        
+        // If that fails too, use the final fallback image
+        e.target.onerror = () => {
+          e.target.src = fallbackImage;
+          e.target.onerror = null; // Prevent infinite loop
+          if (onFallbackUsed && typeof onFallbackUsed === 'function') {
+            onFallbackUsed();
+          }
+        };
+      } else {
+        // For development or if we've tried everything, use fallback image
+        e.target.src = fallbackImage;
+        e.target.onerror = null; // Prevent infinite loop
+        if (onFallbackUsed && typeof onFallbackUsed === 'function') {
+          onFallbackUsed();
+        }
       }
     };
   } else {

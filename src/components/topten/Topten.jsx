@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClosedCaptioning,
   faMicrophone,
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "@/src/context/LanguageContext";
 import { Link, useNavigate } from "react-router-dom";
 import useToolTipPosition from "@/src/hooks/useToolTipPosition";
 import Qtip from "../qtip/Qtip";
+import { getImageUrl, handleImageError } from "../../utils/imageProxy";
 
 function Topten({ data, className }) {
   const { language } = useLanguage();
@@ -99,12 +101,13 @@ function Topten({ data, className }) {
               >
                 {/* Image with tooltip behavior */}
                 <img
-                  src={`https://wsrv.nl/?url=${item.poster}`}
+                  src={getImageUrl(item.poster, { section: "topten", forceDirect: true })}
                   alt={item.title}
                   className="w-[60px] h-[75px] rounded-md object-cover flex-shrink-0 cursor-pointer"
                   onClick={() => navigate(`/watch/${item.id}`)}
                   onMouseEnter={() => handleMouseEnter(item, index)}
                   onMouseLeave={handleMouseLeave}
+                  onError={(e) => handleImageError(e, { originalUrl: item.poster })}
                 />
 
                 {/* Tooltip positioned near image */}
