@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { getImageUrl, handleImageError } from '../utils/imageProxy';
-import { Image } from './ImageComponent';
 
 const ImageTest = ({ imageUrl }) => {
   const [showDebug, setShowDebug] = useState(false);
@@ -107,11 +106,12 @@ const ImageTest = ({ imageUrl }) => {
         
         <div className="p-4 bg-gray-700 rounded">
           <h3 className="text-lg font-semibold mb-2 text-white">Our Utility</h3>
-          <Image 
-            src={testUrl}
+          <img 
+            src={utilityUrl}
             alt="Our Utility" 
             className="w-full h-64 object-cover rounded"
-            section={testSection}
+            onError={(e) => handleImageError(e, { originalUrl: testUrl })}
+            data-section={testSection}
           />
         </div>
       </div>
