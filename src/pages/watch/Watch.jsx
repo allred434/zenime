@@ -24,6 +24,7 @@ import Watchcontrols from "@/src/components/watchcontrols/Watchcontrols";
 import useWatchControl from "@/src/hooks/useWatchControl";
 import VerifyPopup from "@/src/components/VerifyPopup/VerifyPopup";
 import { trackWatchPage } from "@/src/utils/analytics";
+import { getImageUrl, handleImageError } from "../../utils/imageProxy";
 
 export default function Watch() {
   const location = useLocation();
@@ -197,11 +198,12 @@ export default function Watch() {
         <img
           src={
             !animeInfoLoading
-              ? `https://wsrv.nl/?url=${animeInfo?.poster}`
+              ? getImageUrl(animeInfo?.poster)
               : "https://i.postimg.cc/rFZnx5tQ/2-Kn-Kzog-md.webp"
           }
           alt={`${animeInfo?.title} Poster`}
           className="absolute inset-0 w-full h-full object-cover filter grayscale z-[-900]"
+          onError={(e) => handleImageError(e)}
         />
         <div className="absolute inset-0 bg-[#3a3948] bg-opacity-80 backdrop-blur-md z-[-800]"></div>
         <div className="relative z-10 px-4 pb-[50px] grid grid-cols-[minmax(0,75%),minmax(0,25%)] w-full h-full mt-[128px] max-[1400px]:flex max-[1400px]:flex-col max-[1200px]:mt-[64px] max-[1024px]:px-0 max-md:mt-[50px]">
@@ -333,9 +335,10 @@ export default function Watch() {
                         </p>
                         <div className="absolute inset-0 z-10 bg-[url('https://i.postimg.cc/pVGY6RXd/thumb.png')] bg-repeat"></div>
                         <img
-                          src={`https://wsrv.nl/?url=${season.season_poster}`}
+                          src={getImageUrl(season.season_poster)}
                           alt=""
                           className="w-full h-full object-cover blur-[3px] opacity-50"
+                          onError={(e) => handleImageError(e)}
                         />
                       </Link>
                     ))}
