@@ -158,18 +158,18 @@ function AnimeInfo({ random = false }) {
     <>
       <div className="relative grid grid-cols-[minmax(0,75%),minmax(0,25%)] h-fit w-full overflow-hidden text-white mt-[64px] max-[1200px]:flex max-[1200px]:flex-col max-md:mt-[50px]">
         <img
-          src={getImageUrl(poster)}
+          src={getImageUrl(poster, { forceDirect: true })}
           alt={`${title} Poster`}
           className="absolute inset-0 object-cover w-full h-full filter grayscale blur-lg z-[-900]"
-          onError={(e) => handleImageError(e)}
+          onError={(e) => handleImageError(e, { originalUrl: poster })}
         />
         <div className="flex items-start z-10 px-14 py-[70px] bg-[#252434] bg-opacity-70 gap-x-8 max-[1024px]:px-6 max-[1024px]:py-10 max-[1024px]:gap-x-4 max-[575px]:flex-col max-[575px]:items-center max-[575px]:justify-center">
           <div className="relative w-[180px] h-[270px] max-[575px]:w-[140px] max-[575px]:h-[200px] flex-shrink-0">
             <img
-              src={getImageUrl(poster)}
+              src={getImageUrl(poster, { forceDirect: true })}
               alt={`${title} Poster`}
               className="w-full h-full object-cover object-center flex-shrink-0"
-              onError={(e) => handleImageError(e)}
+              onError={(e) => handleImageError(e, { originalUrl: poster })}
             />
             {animeInfo.adultContent && (
               <div className="text-white px-2 rounded-md bg-[#FF5700] absolute top-2 left-2 flex items-center justify-center text-[14px] font-bold">

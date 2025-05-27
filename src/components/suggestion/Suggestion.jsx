@@ -56,10 +56,10 @@ function Suggestion({ keyword, className }) {
               }}
             >
               <img
-                src={getImageUrl(item.poster)}
+                src={getImageUrl(item.poster, { forceDirect: true })}
                 className="w-[50px] h-[75px] flex-shrink-0 object-cover"
                 alt=""
-                onError={(e) => handleImageError(e)}
+                onError={(e) => handleImageError(e, { originalUrl: item.poster })}
               />
               <div className="flex flex-col gap-y-[2px]">
                 {item?.title && (
